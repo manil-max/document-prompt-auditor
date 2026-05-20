@@ -88,4 +88,43 @@ class SecurityAuditor:
 
     def scan_visuals(self, span, page_num):
         """Flags text blocks where font size is too small or matches background color."""
-        pass
+        text = span.get("text", "").strip()
+        if not text:
+            return None
+
+        size = span.get("size", 0.0)
+        color_int = span.get("color", 0)
+        
+        # Deconstruct RGB channels
+        r = (color_int >> 16) & 255
+        g = (color_int >> 8) & 255
+        b = color_int & 255
+
+        warnings_found = []
+
+        # Check A: Tiny Font Size (< 6pt)
+        if size < 6.0:
+            warning = {
+                "page": page_num,
+                "rule": "Tiny Font Trap",
+                "severity": "HIGH",
+                "message": f"Detected tiny text (size: {size:.2f}pt).",
+                "context": f"Text: '{text}'"
+            }
+            self.warnings.append(warning)
+            warnings_found.append(warning)
+
+        # Check B: Text color matches typical white background (r, g, b all > 240)
+        # Note: If text is white, r=255, g=255, b=255.
+        if r > 240 and g > 240 and b > 240:
+            warning = {
+                "page": page_num,
+                "rule": "Invisible Text Trap",
+                "severity": "CRITICAL",
+                "message": f"Detected text rendered in white/off-white color (RGB: {r},{g},{b}).",
+                "context": f"Text: '{text}'"
+            }
+            self.warnings.append(warning)
+            warnings_found.append(warning)
+
+        return warnings_found if warnings_found else None

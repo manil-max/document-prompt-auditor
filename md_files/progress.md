@@ -18,7 +18,7 @@
 - [x] 3.1 Create `security_auditor.py`.
 - [x] 3.2 Write `scan_unicode(text)`: Returns warning if invisible markers exist.
 - [x] 3.3 Write `scan_base64(text)`: Returns warning if Base64 blocks are detected.
-- [ ] 3.4 Write `scan_visuals(text_block)`: Returns warning if text is too small or matches background color.
+- [x] 3.4 Write `scan_visuals(text_block)`: Returns warning if text is too small or matches background color.
 
 ## Phase 4: The Alert System & Reporting
 - [ ] 4.1 Connect the Auditor logic to the main extraction loop.
