@@ -10,7 +10,7 @@
     - [x] Trap PDF 3 (White text on white background, 1px font).
 
 ## Phase 2: Core Engine & Safe Extraction
-- [ ] 2.1 Set up `scanner.py` and `PyMuPDF` document loader.
+- [x] 2.1 Set up `scanner.py` and `PyMuPDF` document loader.
 - [ ] 2.2 Write the text extraction loop (`page.get_text("dict")`).
 - [ ] 2.3 Develop the reconstruction algorithm to save the raw text cleanly into `extracted_content.txt`.
 
