@@ -3,11 +3,11 @@
 ## Phase 1: Environment & Test Suite Setup
 - [x] 1.1 Create Git repository and Python virtual environment (`venv`).
 - [x] 1.2 Install dependencies: `pip install PyMuPDF`.
-- [ ] 1.3 Create the Test Suite PDFs:
-    - [ ] Control PDF (normal text to check paragraph structure).
-    - [ ] Trap PDF 1 (Zero-width Unicode characters).
-    - [ ] Trap PDF 2 (Suspicious Base64 strings).
-    - [ ] Trap PDF 3 (White text on white background, 1px font).
+- [x] 1.3 Create the Test Suite PDFs:
+    - [x] Control PDF (normal text to check paragraph structure).
+    - [x] Trap PDF 1 (Zero-width Unicode characters).
+    - [x] Trap PDF 2 (Suspicious Base64 strings).
+    - [x] Trap PDF 3 (White text on white background, 1px font).
 
 ## Phase 2: Core Engine & Safe Extraction
 - [ ] 2.1 Set up `scanner.py` and `PyMuPDF` document loader.
