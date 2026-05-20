@@ -1,0 +1,6 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+extracted_content.txt
+security_report.txt
