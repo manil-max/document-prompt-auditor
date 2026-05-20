@@ -15,7 +15,7 @@
 - [x] 2.3 Develop the reconstruction algorithm to save the raw text cleanly into `extracted_content.txt`.
 
 ## Phase 3: The Auditor Logic (Detection, Not Deletion)
-- [ ] 3.1 Create `security_auditor.py`.
+- [x] 3.1 Create `security_auditor.py`.
 - [ ] 3.2 Write `scan_unicode(text)`: Returns warning if invisible markers exist.
 - [ ] 3.3 Write `scan_base64(text)`: Returns warning if Base64 blocks are detected.
 - [ ] 3.4 Write `scan_visuals(text_block)`: Returns warning if text is too small or matches background color.
