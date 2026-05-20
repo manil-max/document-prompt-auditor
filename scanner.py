@@ -16,6 +16,31 @@ def load_pdf(file_path):
     except Exception as e:
         raise RuntimeError(f"Error opening PDF: {e}")
 
+def extract_text_with_metadata(doc):
+    """
+    Extracts text blocks from the document, retaining metadata like font size, color, 
+    coordinates (bbox), and page numbers.
+    Returns a list of dictionaries containing span details.
+    """
+    spans_metadata = []
+    for page_num, page in enumerate(doc):
+        page_dict = page.get_text("dict")
+        for block in page_dict.get("blocks", []):
+            if block.get("type") == 0:  # Text block
+                for line in block.get("lines", []):
+                    for span in line.get("spans", []):
+                        spans_metadata.append({
+                            "page": page_num + 1,
+                            "text": span.get("text", ""),
+                            "size": span.get("size", 0.0),
+                            "font": span.get("font", ""),
+                            "color": span.get("color", 0),
+                            "bbox": span.get("bbox", (0, 0, 0, 0)),
+                            "origin": span.get("origin", (0, 0)),
+                        })
+    return spans_metadata
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Document Prompt Auditor (DPA) - Passive Security Scan for PDF prompt injections."
@@ -37,6 +62,14 @@ def main():
         for key, value in doc.metadata.items():
             if value:
                 print(f"  - {key}: {value}")
+        
+        print("\nExtracting text spans...")
+        spans = extract_text_with_metadata(doc)
+        print(f"Extracted {len(spans)} text spans.")
+        if spans:
+            print("Preview of first 3 spans:")
+            for i, span in enumerate(spans[:3]):
+                print(f"  Span {i+1} [Page {span['page']} | Size {span['size']:.1f}pt | Color {span['color']}]: {repr(span['text'])}")
         
     except Exception as e:
         print(e)
