@@ -28,5 +28,5 @@
 ## Phase 5: CLI Polish & GitHub Deployment
 - [x] 5.1 Implement `argparse` for CLI commands.
 - [x] 5.2 Format terminal output to print a summary (e.g., "Scan Complete: 3 Warnings Found. Check security_report.txt").
-- [ ] 5.3 Write a professional `README.md` explaining the "Auditor" philosophy.
+- [x] 5.3 Write a professional `README.md` explaining the "Auditor" philosophy.
 - [ ] 5.4 Push the initial commit to GitHub.
