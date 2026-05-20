@@ -2,7 +2,7 @@
 
 ## Phase 1: Environment & Test Suite Setup
 - [x] 1.1 Create Git repository and Python virtual environment (`venv`).
-- [ ] 1.2 Install dependencies: `pip install PyMuPDF`.
+- [x] 1.2 Install dependencies: `pip install PyMuPDF`.
 - [ ] 1.3 Create the Test Suite PDFs:
     - [ ] Control PDF (normal text to check paragraph structure).
     - [ ] Trap PDF 1 (Zero-width Unicode characters).
