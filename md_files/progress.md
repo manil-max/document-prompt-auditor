@@ -12,7 +12,7 @@
 ## Phase 2: Core Engine & Safe Extraction
 - [x] 2.1 Set up `scanner.py` and `PyMuPDF` document loader.
 - [x] 2.2 Write the text extraction loop (`page.get_text("dict")`).
-- [ ] 2.3 Develop the reconstruction algorithm to save the raw text cleanly into `extracted_content.txt`.
+- [x] 2.3 Develop the reconstruction algorithm to save the raw text cleanly into `extracted_content.txt`.
 
 ## Phase 3: The Auditor Logic (Detection, Not Deletion)
 - [ ] 3.1 Create `security_auditor.py`.

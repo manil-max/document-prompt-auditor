@@ -40,6 +40,30 @@ def extract_text_with_metadata(doc):
                         })
     return spans_metadata
 
+def reconstruct_text(doc):
+    """
+    Reconstructs the full text of the PDF page-by-page, retaining paragraph structure.
+    Blocks are separated by a double newline, and lines within blocks are joined.
+    """
+    full_text_pages = []
+    for page_num, page in enumerate(doc):
+        page_text = []
+        page_dict = page.get_text("dict")
+        for block in page_dict.get("blocks", []):
+            if block.get("type") == 0:  # Text block
+                block_lines = []
+                for line in block.get("lines", []):
+                    line_text = "".join(span.get("text", "") for span in line.get("spans", []))
+                    if line_text.strip():
+                        block_lines.append(line_text)
+                if block_lines:
+                    # Join lines within the block with newline to preserve lists and basic layout
+                    page_text.append("\n".join(block_lines))
+        
+        # Combine blocks on the page
+        full_text_pages.append(f"--- Page {page_num + 1} ---\n" + "\n\n".join(page_text))
+        
+    return "\n\n".join(full_text_pages)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -70,6 +94,13 @@ def main():
             print("Preview of first 3 spans:")
             for i, span in enumerate(spans[:3]):
                 print(f"  Span {i+1} [Page {span['page']} | Size {span['size']:.1f}pt | Color {span['color']}]: {repr(span['text'])}")
+        
+        print("\nReconstructing original text layout...")
+        reconstructed = reconstruct_text(doc)
+        output_file = "extracted_content.txt"
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(reconstructed)
+        print(f"Saved cleanly reconstructed text to '{output_file}'")
         
     except Exception as e:
         print(e)
