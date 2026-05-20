@@ -1,4 +1,5 @@
 import re
+import base64
 
 class SecurityAuditor:
     """
@@ -47,7 +48,43 @@ class SecurityAuditor:
 
     def scan_base64(self, text, page_num):
         """Scans for suspicious Base64 encoded string blocks."""
-        pass
+        # Regex to find candidate Base64 blocks: at least 12 alphanumeric/plus/slash characters
+        candidates = re.findall(r'\b[A-Za-z0-9+/]{12,}={0,2}\b', text)
+        found_warnings = []
+        for candidate in candidates:
+            # Skip candidates that look like plain numbers or plain text words
+            if candidate.isdigit() or len(set(candidate)) < 4:
+                continue
+            
+            # Check if it decodes to valid UTF-8 printable text
+            try:
+                # Add required padding if needed
+                padded_candidate = candidate
+                missing_padding = len(candidate) % 4
+                if missing_padding:
+                    padded_candidate += '=' * (4 - missing_padding)
+                
+                decoded_bytes = base64.b64decode(padded_candidate)
+                decoded_text = decoded_bytes.decode('utf-8', errors='strict')
+                
+                # Check ratio of printable characters
+                if len(decoded_text) > 4:
+                    printable_chars = sum(1 for c in decoded_text if c.isprintable() or c in '\r\n\t')
+                    ratio = printable_chars / len(decoded_text)
+                    
+                    if ratio > 0.85:
+                        warning = {
+                            "page": page_num,
+                            "rule": "Suspicious Base64 Payload",
+                            "severity": "MEDIUM",
+                            "message": f"Detected Base64 block decoding to: '{decoded_text.strip()}'",
+                            "context": f"Encoded: {candidate}"
+                        }
+                        self.warnings.append(warning)
+                        found_warnings.append(warning)
+            except Exception:
+                pass
+        return found_warnings if found_warnings else None
 
     def scan_visuals(self, span, page_num):
         """Flags text blocks where font size is too small or matches background color."""
