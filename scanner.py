@@ -1,6 +1,8 @@
 import argparse
 import os
+import datetime
 import fitz  # PyMuPDF
+from security_auditor import SecurityAuditor
 
 def load_pdf(file_path):
     """Loads a PDF file and returns the fitz Document object."""
@@ -65,6 +67,59 @@ def reconstruct_text(doc):
         
     return "\n\n".join(full_text_pages)
 
+def save_security_report(target_file, warnings, output_path="security_report.txt"):
+    """
+    Formats and exports document audit warnings into a clean, human-readable report file.
+    """
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Calculate severity counts
+    severities = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
+    for w in warnings:
+        sev = w.get("severity", "LOW")
+        if sev in severities:
+            severities[sev] += 1
+            
+    status = "SAFE" if not warnings else "RISK DETECTED"
+    
+    lines = []
+    lines.append("=" * 80)
+    lines.append("                    DOCUMENT PROMPT AUDITOR SECURITY REPORT")
+    lines.append("=" * 80)
+    lines.append(f"Scan Date:   {timestamp}")
+    lines.append(f"Target File: {target_file}")
+    lines.append(f"Overall Status: {status} ({len(warnings)} Warnings Found)")
+    lines.append("")
+    lines.append("SUMMARY OF FINDINGS:")
+    lines.append("-" * 80)
+    lines.append(f"[CRITICAL]  {severities['CRITICAL']} Warnings")
+    lines.append(f"[HIGH]      {severities['HIGH']} Warnings")
+    lines.append(f"[MEDIUM]    {severities['MEDIUM']} Warnings")
+    lines.append(f"[LOW]       {severities['LOW']} Warnings")
+    lines.append("")
+    lines.append("DETAILED WARNINGS LOG:")
+    lines.append("-" * 80)
+    
+    if not warnings:
+        lines.append("No security anomalies or hidden prompts detected in this document.")
+    else:
+        # Sort warnings by page number, then severity (CRITICAL first, then HIGH, etc.)
+        sev_priority = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
+        sorted_warnings = sorted(warnings, key=lambda x: (x.get("page", 0), sev_priority.get(x.get("severity", "LOW"), 4)))
+        
+        for idx, w in enumerate(sorted_warnings):
+            lines.append(f"[{idx + 1}] Page {w.get('page')} | Severity: {w.get('severity')} | Rule: {w.get('rule')}")
+            lines.append(f"    Message: {w.get('message')}")
+            lines.append(f"    Context: {w.get('context')}")
+            lines.append("-" * 80)
+            
+    lines.append("=" * 80)
+    
+    report_content = "\n".join(lines)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(report_content)
+    print(f"Saved detailed security warning report to '{output_path}'")
+
 def main():
     parser = argparse.ArgumentParser(
         description="Document Prompt Auditor (DPA) - Passive Security Scan for PDF prompt injections."
@@ -95,12 +150,30 @@ def main():
             for i, span in enumerate(spans[:3]):
                 print(f"  Span {i+1} [Page {span['page']} | Size {span['size']:.1f}pt | Color {span['color']}]: {repr(span['text'])}")
         
+        print("\nAuditing document for prompt injections and security traps...")
+        auditor = SecurityAuditor()
+        for span in spans:
+            auditor.scan_visuals(span, span['page'])
+            auditor.scan_unicode(span['text'], span['page'])
+            auditor.scan_base64(span['text'], span['page'])
+        
+        print(f"Audit completed. Found {len(auditor.warnings)} potential security warnings.")
+        if auditor.warnings:
+            print("Detected warnings:")
+            for warning in auditor.warnings[:5]:
+                print(f"  - [{warning['severity']}] Page {warning['page']} | {warning['rule']}: {warning['message']}")
+            if len(auditor.warnings) > 5:
+                print(f"  ... and {len(auditor.warnings) - 5} more warnings.")
+        
         print("\nReconstructing original text layout...")
         reconstructed = reconstruct_text(doc)
         output_file = "extracted_content.txt"
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(reconstructed)
         print(f"Saved cleanly reconstructed text to '{output_file}'")
+        
+        # Save the security warning report
+        save_security_report(args.file, auditor.warnings)
         
     except Exception as e:
         print(e)

@@ -21,9 +21,9 @@
 - [x] 3.4 Write `scan_visuals(text_block)`: Returns warning if text is too small or matches background color.
 
 ## Phase 4: The Alert System & Reporting
-- [ ] 4.1 Connect the Auditor logic to the main extraction loop.
-- [ ] 4.2 Create a logging system that records warnings into a Python list/dictionary.
-- [ ] 4.3 Write a function to format and export these warnings into a readable `security_report.txt`.
+- [x] 4.1 Connect the Auditor logic to the main extraction loop.
+- [x] 4.2 Create a logging system that records warnings into a Python list/dictionary.
+- [x] 4.3 Write a function to format and export these warnings into a readable `security_report.txt`.
 
 ## Phase 5: CLI Polish & GitHub Deployment
 - [ ] 5.1 Implement `argparse` for CLI commands.
