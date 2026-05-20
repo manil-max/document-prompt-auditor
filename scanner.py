@@ -175,6 +175,14 @@ def main():
         # Save the security warning report
         save_security_report(args.file, auditor.warnings)
         
+        # Format terminal output summary
+        print("\n" + "=" * 80)
+        print(f"SCAN COMPLETE: {len(auditor.warnings)} Warnings Found.")
+        print("-" * 80)
+        print(f"  * Cleanly reconstructed text saved to:  {output_file}")
+        print(f"  * Detailed security report saved to:    security_report.txt")
+        print("=" * 80 + "\n")
+        
     except Exception as e:
         print(e)
         exit(1)
